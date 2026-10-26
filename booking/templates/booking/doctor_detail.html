@@ -1,0 +1,366 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile | CareConnect</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #087f8c;
+            --primary-dark: #066570;
+            --soft-bg: #f4f8fb;
+            --text-dark: #183247;
+        }
+
+        body {
+            background: var(--soft-bg);
+            color: var(--text-dark);
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar, footer {
+            background: white;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            width: 42px;
+            height: 42px;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .text-care {
+            color: var(--primary);
+        }
+
+        .btn-care {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+        }
+
+        .btn-care:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .profile-card, .availability-card {
+            background: white;
+            border: 1px solid #e5edf2;
+            border-radius: 22px;
+            box-shadow: 0 8px 28px rgba(28, 57, 78, .05);
+        }
+
+        .profile-photo, .profile-placeholder {
+            width: 100%;
+            max-width: 280px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .profile-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e4f6f4;
+            color: var(--primary);
+            font-size: 90px;
+        }
+
+        .specialty-badge {
+            display: inline-block;
+            background: #e4f6f4;
+            color: #08736e;
+            border-radius: 30px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 18px;
+            color: #536779;
+        }
+
+        .detail-item i {
+            color: var(--primary);
+            font-size: 19px;
+        }
+
+        .availability-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        .availability-row:last-child {
+            border-bottom: none;
+        }
+
+        .time-badge {
+            background: #eaf7ef;
+            color: #247446;
+            padding: 7px 11px;
+            border-radius: 10px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 576px) {
+            .profile-photo, .profile-placeholder {
+                max-width: 100%;
+                height: 240px;
+            }
+
+            .availability-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
+    <div class="container py-2">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
+           href="{% url 'home' %}">
+            <span class="brand-icon">
+                <i class="bi bi-heart-pulse-fill"></i>
+            </span>
+            <span>Care<span class="text-care">Connect</span></span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-semibold"
+                       href="{% url 'doctors_list' %}">Find Doctors</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_appointments' %}">
+                            My Appointments
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4 py-lg-5">
+
+    <a href="{% url 'doctors_list' %}"
+       class="text-care text-decoration-none fw-semibold">
+        <i class="bi bi-arrow-left me-2"></i>Back to Doctors
+    </a>
+
+    <section class="profile-card p-3 p-md-4 p-lg-5 mt-4">
+        <div class="row g-4 g-lg-5 align-items-start">
+
+            <div class="col-12 col-md-4 text-center">
+                {% if doctor.profile_photo %}
+                    <img src="{{ doctor.profile_photo.url }}"
+                         class="profile-photo"
+                         alt="Dr. {{ doctor.name }}">
+                {% else %}
+                    <div class="profile-placeholder mx-auto">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                {% endif %}
+
+                <div class="mt-3">
+                    <span class="badge rounded-pill text-bg-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        {% if doctor.is_available %}
+                            Available
+                        {% else %}
+                            Currently unavailable
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-8">
+                <span class="text-care small fw-bold">DOCTOR PROFILE</span>
+                <h1 class="fw-bold mt-2 mb-3">
+                    Dr. {{ doctor.name }}
+                </h1>
+
+                <div class="mb-4">
+                    <span class="specialty-badge">
+                        <i class="bi bi-heart-pulse me-1"></i>
+                        {{ doctor.specialization.name }}
+                    </span>
+                </div>
+
+                {% if doctor.qualification %}
+                    <div class="detail-item">
+                        <i class="bi bi-mortarboard"></i>
+                        <div>
+                            <strong>Qualification</strong>
+                            <div>{{ doctor.qualification }}</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if doctor.experience %}
+                    <div class="detail-item">
+                        <i class="bi bi-award"></i>
+                        <div>
+                            <strong>Experience</strong>
+                            <div>{{ doctor.experience }} years</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="detail-item">
+                    <i class="bi bi-hospital"></i>
+                    <div>
+                        <strong>Hospital</strong>
+                        <div>{{ doctor.hospital.name }}</div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <i class="bi bi-geo-alt"></i>
+                    <div>
+                        <strong>Location</strong>
+                        <div>
+                            {{ doctor.hospital.address }},
+                            {{ doctor.hospital.city }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if doctor.consultation_fee != None %}
+                    <div class="detail-item">
+                        <i class="bi bi-currency-rupee"></i>
+                        <div>
+                            <strong>Consultation Fee</strong>
+                            <div class="fw-bold text-care">
+                                ₹{{ doctor.consultation_fee }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if doctor.bio %}
+                    <div class="mt-3">
+                        <h2 class="h6 fw-bold">About the Doctor</h2>
+                        <p class="text-secondary mb-0">{{ doctor.bio }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="d-grid d-sm-flex gap-2 mt-4">
+                    <a href="#availability"
+                       class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                        <i class="bi bi-clock me-1"></i> View Hours
+                    </a>
+
+                    <a href="{% url 'book_appointment' doctor.id %}"
+                       class="btn btn-care rounded-3 px-4 py-2">
+                        <i class="bi bi-calendar2-check me-1"></i>
+                        Book Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="availability-card p-3 p-md-4 p-lg-5 mt-4"
+             id="availability">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="brand-icon">
+                <i class="bi bi-calendar-week fs-5"></i>
+            </div>
+            <div>
+                <h2 class="h4 fw-bold mb-1">Doctor Availability</h2>
+                <p class="text-secondary mb-0">
+                    Scheduled consultation days and times
+                </p>
+            </div>
+        </div>
+
+        {% for slot in availabilities %}
+            <div class="availability-row">
+                <div class="fw-semibold">
+                    <i class="bi bi-calendar-check text-care me-2"></i>
+                    {{ slot.day }}
+                </div>
+                <span class="time-badge">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ slot.start_time|time:"g:i A" }} –
+                    {{ slot.end_time|time:"g:i A" }}
+                </span>
+            </div>
+        {% empty %}
+            <div class="text-center py-4">
+                <i class="bi bi-calendar-x display-5 text-secondary"></i>
+                <p class="text-secondary mt-3 mb-0">
+                    No availability schedule has been added yet.
+                </p>
+            </div>
+        {% endfor %}
+
+        <div class="mt-4">
+            <a href="{% url 'book_appointment' doctor.id %}"
+               class="btn btn-care rounded-3 px-4 py-2">
+                Book an Appointment
+                <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="border-top mt-5 py-4">
+    <div class="container text-center">
+        <a href="{% url 'home' %}"
+           class="text-decoration-none fw-bold text-dark">
+            <i class="bi bi-heart-pulse-fill text-care me-1"></i>
+            Care<span class="text-care">Connect</span>
+        </a>
+        <p class="small text-secondary mt-2 mb-0">
+            Connecting patients with healthcare professionals.
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

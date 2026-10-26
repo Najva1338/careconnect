@@ -1,0 +1,482 @@
+
+
+:root {
+    --primary: #087f8c;
+    --primary-dark: #066570;
+    --soft-bg: #f4f8fb;
+    --text-dark: #183247;
+    --muted: #637587;
+    --border: #e5edf2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--soft-bg);
+    color: var(--text-dark);
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background: #fff;
+    min-height: 72px;
+}
+
+.navbar-brand {
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon,
+.section-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 22px;
+}
+
+.nav-link {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+}
+
+/* Hero */
+.booking-hero {
+    padding: 48px 0 72px;
+    background: linear-gradient(120deg, #e1f7f5, #edf3ff);
+}
+
+.hero-label {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+}
+
+.booking-hero h1 {
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+
+.hero-subtitle {
+    color: var(--muted);
+    margin-bottom: 0;
+    line-height: 1.7;
+}
+
+/* Main layout */
+.booking-container {
+    margin-top: -30px;
+    margin-bottom: 55px;
+    position: relative;
+}
+
+.doctor-card,
+.booking-form-card {
+    height: 100%;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 10px 32px rgba(28, 57, 78, .06);
+}
+
+.doctor-card-heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 25px;
+}
+
+.doctor-card-heading h2,
+.form-heading h2 {
+    font-size: 22px;
+    font-weight: 750;
+    margin-bottom: 5px;
+}
+
+.doctor-card-heading p,
+.form-heading p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+}
+
+/* Doctor summary */
+.doctor-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.doctor-photo,
+.doctor-avatar {
+    width: 94px;
+    height: 94px;
+    flex-shrink: 0;
+    border-radius: 18px;
+    object-fit: cover;
+}
+
+.doctor-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e4f6f4;
+    color: var(--primary);
+    font-size: 38px;
+    font-weight: 700;
+}
+
+.doctor-profile-info {
+    min-width: 0;
+}
+
+.doctor-profile-info h3 {
+    font-size: 19px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+    margin-bottom: 7px;
+}
+
+.specialty {
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 650;
+    margin-bottom: 10px;
+}
+
+.available-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    background: #eaf7ef;
+    color: #247446;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.available-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #26985a;
+}
+
+.doctor-details {
+    padding-top: 12px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 12px 0;
+}
+
+.detail-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: #e4f6f4;
+    font-size: 17px;
+}
+
+.detail-row small,
+.fee-panel small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.detail-row p {
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.detail-row .muted-text {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+/* Fee panel */
+.fee-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
+    margin-top: 14px;
+    border-radius: 15px;
+    background: #eaf8f7;
+}
+
+.fee-panel p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.fee-panel strong {
+    color: var(--primary);
+    font-size: 24px;
+    white-space: nowrap;
+}
+
+.availability-note {
+    margin-top: 20px;
+    padding: 17px;
+    background: #f6f9fc;
+    border-radius: 14px;
+}
+
+.availability-note strong {
+    font-size: 14px;
+}
+
+.availability-note p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+.availability-note a {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.availability-note a:hover {
+    text-decoration: underline;
+}
+
+/* Form */
+.form-heading {
+    padding-bottom: 22px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.step-label {
+    display: inline-block;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 1.3px;
+    margin-bottom: 10px;
+}
+
+.form-label {
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 650;
+    margin-bottom: 9px;
+}
+
+.required {
+    color: #dc3545;
+}
+
+.optional-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #dce5ec;
+    border-radius: 11px;
+    padding: 12px 14px;
+    background-color: #fff;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(8, 127, 140, .12);
+}
+
+.form-hint {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+.field-error {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.booking-reminder {
+    display: flex;
+    gap: 12px;
+    padding: 15px;
+    margin: 22px 0;
+    border: 1px solid #d8ebf6;
+    border-radius: 12px;
+    background: #f0f8fc;
+}
+
+.reminder-icon {
+    color: var(--primary);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.booking-reminder p {
+    color: #526a7d;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Buttons */
+.submit-booking-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 51px;
+    padding: 13px 20px;
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.submit-booking-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.cancel-link {
+    display: block;
+    text-align: center;
+    margin-top: 17px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.cancel-link:hover {
+    color: var(--primary);
+}
+
+.alert {
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+/* Footer */
+.site-footer {
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+}
+
+.site-footer p {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .booking-container {
+        margin-top: -25px;
+    }
+
+    .doctor-card,
+    .booking-form-card {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 576px) {
+    .booking-hero {
+        padding: 35px 0 55px;
+    }
+
+    .booking-hero h1 {
+        letter-spacing: -.5px;
+    }
+
+    .doctor-card,
+    .booking-form-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .doctor-profile {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .doctor-photo,
+    .doctor-avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 14px;
+    }
+
+    .doctor-profile-info h3 {
+        font-size: 17px;
+    }
+
+    .fee-panel strong {
+        font-size: 21px;
+    }
+}

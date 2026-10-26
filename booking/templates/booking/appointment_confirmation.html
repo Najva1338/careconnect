@@ -1,0 +1,332 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmed | CareConnect</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #087f8c;
+            --primary-dark: #066570;
+            --soft-bg: #f4f8fb;
+            --text-dark: #183247;
+            --muted: #637587;
+        }
+
+        body {
+            margin: 0;
+            background: var(--soft-bg);
+            color: var(--text-dark);
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: white;
+            padding: 16px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,.04);
+        }
+
+        .brand {
+            color: var(--text-dark);
+            font-size: 22px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand i {
+            color: var(--primary);
+        }
+
+        .main-section {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 15px;
+        }
+
+        .confirmation-card {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            padding: 42px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(24,50,71,.08);
+        }
+
+        .success-icon {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #e4f7ed;
+            color: #20945a;
+            font-size: 46px;
+        }
+
+        .confirmation-card h1 {
+            font-size: clamp(27px, 5vw, 36px);
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .appointment-details {
+            padding: 24px;
+            background: #f6fafb;
+            border: 1px solid #e4edf0;
+            border-radius: 16px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .appointment-details h2 {
+            font-size: 18px;
+            font-weight: 750;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            margin-bottom: 18px;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 11px;
+            background: #e0f5f3;
+            color: var(--primary);
+            font-size: 19px;
+        }
+
+        .detail-row small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .detail-row strong {
+            display: block;
+            overflow-wrap: anywhere;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #fff2d6;
+            color: #8a6100;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            border-radius: 11px;
+            padding: 13px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .btn-outline-custom {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 11px;
+            padding: 13px 20px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline-custom:hover {
+            background: #eaf8f7;
+            color: var(--primary-dark);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 22px 15px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 576px) {
+            .confirmation-card {
+                padding: 26px 19px;
+                border-radius: 18px;
+            }
+
+            .appointment-details {
+                padding: 18px 14px;
+            }
+
+            .action-buttons a {
+                display: block;
+                width: 100%;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="brand" href="{% url 'home' %}">
+            <i class="bi bi-heart-pulse-fill"></i>
+            CareConnect
+        </a>
+    </div>
+</nav>
+
+<main class="main-section">
+    <div class="confirmation-card">
+
+        <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <h1>Appointment Request Submitted!</h1>
+
+        <p class="subtitle">
+            Thank you for choosing CareConnect.
+            Your appointment details are shown below.
+        </p>
+
+        <div class="appointment-details">
+            <h2>
+                <i class="bi bi-calendar2-check me-2"
+                   style="color: var(--primary);"></i>
+                Appointment Details
+            </h2>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-person-heart"></i>
+                </div>
+                <div>
+                    <small>Doctor</small>
+                    <strong>Dr. {{ appointment.doctor.name }}</strong>
+                    <small>{{ appointment.doctor.specialization.name }}</small>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-hospital"></i>
+                </div>
+                <div>
+                    <small>Hospital / Clinic</small>
+                    <strong>{{ appointment.doctor.hospital.name }}</strong>
+                    <small>{{ appointment.doctor.hospital.city }}</small>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div>
+                    <small>Appointment Date</small>
+                    <strong>{{ appointment.appointment_date|date:"d M Y" }}</strong>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div>
+                    <small>Appointment Time</small>
+                    <strong>{{ appointment.appointment_time|time:"h:i A" }}</strong>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <div>
+                    <small>Appointment Status</small>
+                    <span class="status-badge">
+                        {{ appointment.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-icon">
+                    <i class="bi bi-hash"></i>
+                </div>
+                <div>
+                    <small>Appointment Reference</small>
+                    <strong>CC-{{ appointment.id }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <p class="subtitle">
+            Please keep your appointment details for reference.
+            The status above shows whether your appointment is pending or confirmed.
+        </p>
+
+        <div class="action-buttons d-flex flex-wrap justify-content-center gap-2">
+            <a href="{% url 'my_appointments' %}" class="btn-primary-custom">
+                <i class="bi bi-calendar-check me-1"></i>
+                My Appointments
+            </a>
+
+            <a href="{% url 'home' %}" class="btn-outline-custom">
+                <i class="bi bi-house me-1"></i>
+                Back to Home
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<footer class="footer">
+    © 2026 CareConnect. Your health, our priority.
+</footer>
+
+</body>
+</html>
+

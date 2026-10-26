@@ -1,0 +1,750 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Appointments | CareConnect</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --teal: #247b6e;
+            --teal-light: #e8f3ef;
+            --ink: #263b36;
+            --muted: #82908b;
+            --page: #f7f9f6;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--page);
+            color: var(--ink);
+            font-family: Inter, Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        a { text-decoration: none; }
+
+        .layout {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 205px minmax(0, 1fr);
+        }
+
+        .sidebar {
+            background: #fff;
+            border-right: 1px solid #edf0eb;
+            padding: 25px 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 800;
+            color: #244a42;
+            padding: 0 10px 30px;
+        }
+
+        .brand span { color: #299b88; }
+
+        .side-label {
+            color: #a0aaa5;
+            font-size: 10px;
+            letter-spacing: 1.4px;
+            font-weight: 800;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+
+        .side-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #697873;
+            padding: 12px 11px;
+            border-radius: 9px;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .side-link.active {
+            background: #e7f3ef;
+            color: #247b6e;
+            font-weight: 700;
+        }
+
+        .side-link:hover {
+            background: #f1f6f3;
+            color: var(--teal);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 30px;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 30px clamp(18px, 3vw, 42px);
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .welcome {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .btn-teal {
+            background: var(--teal);
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 15px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .btn-teal:hover {
+            color: #fff;
+            background: #1b6358;
+        }
+
+        .heading {
+            font-size: clamp(25px, 3vw, 34px);
+            font-family: Georgia, serif;
+            margin: 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 750;
+            margin: 0;
+        }
+
+        .count {
+            color: var(--teal);
+            background: var(--teal-light);
+            padding: 3px 7px;
+            border-radius: 20px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 255px;
+            gap: 22px;
+        }
+
+        .visit-card, .side-card {
+            background: #fff;
+            border: 1px solid #edf0eb;
+            border-radius: 13px;
+            padding: 19px;
+            margin-top: 14px;
+        }
+
+        .visit-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--teal);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .6px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #edf0eb;
+        }
+
+        .visit-row {
+            display: grid;
+            grid-template-columns: 54px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 13px;
+            padding: 18px 0;
+        }
+
+        .date-box {
+            background: #f1f6f3;
+            border-radius: 9px;
+            text-align: center;
+            padding: 10px 4px;
+        }
+
+        .date-box .month {
+            color: var(--teal);
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .date-box .day {
+            font-size: 23px;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .date-box .weekday {
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        .doctor-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .doctor-photo {
+            width: 43px;
+            height: 43px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: #e8f1ed;
+            flex-shrink: 0;
+        }
+
+        .doctor-fallback {
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #e8f1ed;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .doctor-name {
+            font-weight: 750;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .doctor-sub {
+            color: var(--muted);
+            font-size: 11px;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: 750;
+            background: #fff3d9;
+            color: #936b15;
+            white-space: nowrap;
+        }
+
+        .status.confirmed, .status.completed {
+            background: #e2f5e9;
+            color: #26784d;
+        }
+
+        .status.cancelled {
+            background: #ffebeb;
+            color: #b04444;
+        }
+
+        .status.pending {
+            background: #fff3d9;
+            color: #936b15;
+        }
+
+        .visit-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px 18px;
+            color: #63736c;
+            font-size: 11px;
+            padding: 0 0 14px 67px;
+        }
+
+        .note {
+            background: #f1f7f4;
+            padding: 11px 13px;
+            border-radius: 7px;
+            color: #687b72;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .visit-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+            font-size: 11px;
+        }
+
+        .action-link {
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        .action-link:hover { color: #14594f; }
+
+        .action-muted { color: #7b8982; }
+
+        .cancel-btn {
+            background: #fff;
+            border: 1px solid #e6b8b8;
+            color: #b04444;
+            border-radius: 7px;
+            padding: 8px 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .cancel-btn:hover {
+            background: #fff0f0;
+            border-color: #b04444;
+        }
+
+        .right-heading {
+            font-size: 10px;
+            color: var(--teal);
+            font-weight: 800;
+            letter-spacing: .5px;
+        }
+
+        .side-card h3 {
+            font-family: Georgia, serif;
+            font-size: 18px;
+            margin: 12px 0;
+        }
+
+        .side-card p {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .past-list {
+            background: #fff;
+            border: 1px solid #edf0eb;
+            border-radius: 12px;
+            padding: 0 16px;
+            margin-top: 14px;
+        }
+
+        .past-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 0;
+            border-bottom: 1px solid #edf0eb;
+        }
+
+        .past-row:last-child { border-bottom: 0; }
+
+        .empty {
+            text-align: center;
+            padding: 35px 15px;
+            color: var(--muted);
+        }
+
+        .footer-note {
+            color: #9aa49e;
+            font-size: 10px;
+            text-align: right;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 1000px) {
+            .layout {
+                grid-template-columns: 170px minmax(0, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .right-column {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .right-column .side-card { margin-top: 0; }
+        }
+
+        @media (max-width: 650px) {
+            .layout { display: block; }
+
+            .sidebar {
+                padding: 12px 15px;
+                border-right: 0;
+                border-bottom: 1px solid #edf0eb;
+            }
+
+            .brand { padding: 0 0 10px; }
+
+            .side-label, .sidebar-bottom { display: none; }
+
+            .sidebar nav {
+                display: flex;
+                gap: 5px;
+                overflow-x: auto;
+            }
+
+            .side-link {
+                flex: 0 0 auto;
+                padding: 9px;
+                margin: 0;
+                font-size: 11px;
+            }
+
+            .main { padding: 22px 14px; }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-bottom: 25px;
+            }
+
+            .visit-card { padding: 13px; }
+
+            .visit-row {
+                grid-template-columns: 45px minmax(0, 1fr);
+                gap: 9px;
+            }
+
+            .date-box .day { font-size: 20px; }
+
+            .visit-row > .status {
+                grid-column: 2;
+                justify-self: start;
+            }
+
+            .visit-meta { padding-left: 0; }
+
+            .right-column { grid-template-columns: 1fr; }
+
+            .footer-note { text-align: left; }
+
+            .visit-actions { justify-content: flex-start; }
+
+            .past-row { align-items: flex-start; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+        <a class="brand" href="{% url 'home' %}">✚ Care<span>Connect</span></a>
+
+        <div class="side-label">PATIENT WORKSPACE</div>
+
+        <nav>
+            <a class="side-link" href="{% url 'home' %}">⌂ Overview</a>
+            <a class="side-link active" href="{% url 'my_appointments' %}">▦ Appointments</a>
+            <a class="side-link" href="{% url 'doctors_list' %}">♧ My care team</a>
+            <a class="side-link" href="{% url 'doctors_list' %}">♡ Find a doctor</a>
+            <a class="side-link" href="{% url 'ai_care_guide' %}">✚ AI Care Guide</a>
+            <a class="side-link" href="{% url 'patient_profile' %}">
+                <i class="bi bi-person-circle"></i> My profile
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a class="side-link" href="{% url 'home' %}">⚙ Home</a>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <!-- Django success and error messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <header class="topbar">
+            <div>
+                <h1 class="heading">My appointments</h1>
+                <div class="welcome">
+                    Welcome, {{ user.username }}. Here's what's next for your health.
+                </div>
+            </div>
+
+            <a href="{% url 'doctors_list' %}" class="btn btn-teal">
+                <i class="bi bi-plus-lg me-1"></i> Book an appointment
+            </a>
+        </header>
+
+        <div class="content-grid">
+
+            <div class="main-column">
+
+                <!-- UPCOMING APPOINTMENTS -->
+                <section>
+                    <h2 class="section-title">
+                        Upcoming visits
+                        <span class="count">{{ upcoming_appointments|length }}</span>
+                    </h2>
+
+                    {% for appointment in upcoming_appointments %}
+                    <article class="visit-card">
+
+                        <div class="visit-top">
+                            <span><i class="bi bi-calendar-check me-1"></i> YOUR NEXT VISIT</span>
+                            <span>{{ appointment.appointment_date|date:"l, F j" }}</span>
+                        </div>
+
+                        <div class="visit-row">
+
+                            <div class="date-box">
+                                <div class="month">{{ appointment.appointment_date|date:"M"|upper }}</div>
+                                <div class="day">{{ appointment.appointment_date|date:"d" }}</div>
+                                <div class="weekday">{{ appointment.appointment_date|date:"l" }}</div>
+                            </div>
+
+                            <div class="doctor-line">
+                                {% if appointment.doctor.profile_photo %}
+                                    <img class="doctor-photo"
+                                         src="{{ appointment.doctor.profile_photo.url }}"
+                                         alt="{{ appointment.doctor.name }}">
+                                {% else %}
+                                    <div class="doctor-fallback">👨‍⚕️</div>
+                                {% endif %}
+
+                                <div>
+                                    <div class="doctor-name">{{ appointment.doctor.name }}</div>
+                                    <div class="doctor-sub">{{ appointment.doctor.specialization.name }}</div>
+                                    <div class="doctor-sub">{{ appointment.doctor.hospital.name }}</div>
+                                </div>
+                            </div>
+
+                            <span class="status {{ appointment.status|lower }}">
+                                {{ appointment.status }}
+                            </span>
+                        </div>
+
+                        <div class="visit-meta">
+                            <span><i class="bi bi-clock me-1"></i>{{ appointment.appointment_time|time:"h:i A" }}</span>
+                            <span><i class="bi bi-hospital me-1"></i>{{ appointment.doctor.hospital.name }}</span>
+                        </div>
+
+                        {% if appointment.reason %}
+                            <div class="note">
+                                <strong>Visit note:</strong>
+                                {{ appointment.reason|truncatewords:20 }}
+                            </div>
+                        {% endif %}
+
+                        <div class="visit-actions">
+
+                            <a class="action-link"
+                               href="{% url 'doctor_detail' appointment.doctor.id %}">
+                                View details →
+                            </a>
+
+                            <span class="action-muted">
+                                Booking: {{ appointment.status }}
+                            </span>
+
+                            {% if appointment.status == "Pending" or appointment.status == "Confirmed" %}
+                                <form method="POST"
+                                      action="{% url 'cancel_appointment' appointment.id %}"
+                                      onsubmit="return confirm('Are you sure you want to cancel this appointment?');"
+                                      class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="cancel-btn">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Cancel appointment
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                        </div>
+                    </article>
+
+                    {% empty %}
+                    <div class="visit-card empty">
+                        <div style="font-size:35px">🩺</div>
+                        <strong>No upcoming visits</strong>
+                        <p class="mb-3">Book an appointment with a doctor to see it here.</p>
+                        <a class="btn btn-teal" href="{% url 'doctors_list' %}">
+                            Find a doctor
+                        </a>
+                    </div>
+                    {% endfor %}
+                </section>
+
+                <!-- PAST APPOINTMENTS -->
+                <section class="mt-4">
+                    <h2 class="section-title">
+                        Past visits
+                        <span class="count">{{ past_appointments|length }}</span>
+                    </h2>
+
+                    <div class="past-list">
+                        {% for appointment in past_appointments %}
+                        <div class="past-row">
+                            <div>
+                                <div class="doctor-name">{{ appointment.doctor.name }}</div>
+                                <div class="doctor-sub">
+                                    {{ appointment.doctor.specialization.name }}
+                                    · {{ appointment.appointment_date|date:"M d, Y" }}
+                                    · {{ appointment.appointment_time|time:"h:i A" }}
+                                </div>
+                                <div class="doctor-sub mt-1">
+                                    {{ appointment.doctor.hospital.name }}
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <span class="status {{ appointment.status|lower }}">
+                                    {{ appointment.status }}
+                                </span>
+
+                                <div class="mt-2">
+                                    <a class="action-link"
+                                       href="{% url 'doctor_detail' appointment.doctor.id %}">
+                                        View details →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty">
+                            Your previous visits will appear here.
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- CANCELLED APPOINTMENTS: NEW SECTION -->
+                <section class="mt-4">
+                    <h2 class="section-title">
+                        Cancelled appointments
+                        <span class="count">{{ cancelled_appointments|length }}</span>
+                    </h2>
+
+                    <div class="past-list">
+                        {% for appointment in cancelled_appointments %}
+                        <div class="past-row">
+                            <div>
+                                <div class="doctor-name">
+                                    {{ appointment.doctor.name }}
+                                </div>
+
+                                <div class="doctor-sub">
+                                    {{ appointment.doctor.specialization.name }}
+                                    · {{ appointment.appointment_date|date:"M d, Y" }}
+                                    · {{ appointment.appointment_time|time:"h:i A" }}
+                                </div>
+
+                                <div class="doctor-sub mt-1">
+                                    {{ appointment.doctor.hospital.name }}
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <span class="status cancelled">Cancelled</span>
+
+                                <div class="mt-2">
+                                    <a class="action-link"
+                                       href="{% url 'doctor_detail' appointment.doctor.id %}">
+                                        View doctor →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% empty %}
+                        <div class="empty">
+                            <div style="font-size:28px">📋</div>
+                            <strong>No cancelled appointments</strong>
+                            <p class="mb-0 mt-2">
+                                Appointments you cancel will appear here.
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- RIGHT SIDEBAR CARDS -->
+            <aside class="right-column">
+
+                <section class="side-card">
+                    <div class="right-heading">YOUR CARE TEAM</div>
+                    <h3>Your health matters.</h3>
+                    <p>
+                        Find a doctor and view their details to learn more
+                        about your healthcare options.
+                    </p>
+                    <a class="btn btn-teal w-100" href="{% url 'doctors_list' %}">
+                        Find a doctor →
+                    </a>
+                </section>
+
+                <section class="side-card">
+                    <div class="right-heading">HEALTHCARE DIRECTORY</div>
+                    <h3>Explore hospitals</h3>
+                    <p>
+                        Explore the doctors and hospitals listed in CareConnect.
+                    </p>
+                    <a class="action-link" href="{% url 'doctors_list' %}">
+                        Browse doctors →
+                    </a>
+                </section>
+
+                <section class="side-card">
+                    <div class="right-heading">NEED A HAND?</div>
+                    <h3>Need help choosing a specialist?</h3>
+                    <p>
+                        Use the AI Care Guide for general guidance about
+                        which type of doctor may be appropriate.
+                    </p>
+                    <a class="action-link" href="{% url 'ai_care_guide' %}">
+                        Open AI Care Guide →
+                    </a>
+                </section>
+
+            </aside>
+        </div>
+
+        <div class="footer-note">
+            Your health information is private and secure. · CareConnect © 2026
+        </div>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+ 

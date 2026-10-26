@@ -1,0 +1,627 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareConnect | Your Healthcare, Connected</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="{% static 'booking/home.css' %}">
+</head>
+
+<body>
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top cc-navbar">
+    <div class="container py-2">
+
+        <a class="navbar-brand brand-logo" href="{% url 'home' %}">
+            <span class="brand-symbol"><i class="bi bi-heart-pulse-fill"></i></span>
+            Care<span>Connect</span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'doctors_list' %}">Find Doctors</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}#specialties">Specialties</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ai_care_guide' %}">
+                        <i class="bi bi-stars me-1"></i>AI Care Guide
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'patient_dashboard' %}">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_appointments' %}">
+                            My Appointments
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'patient_profile' %}">
+                            <i class="bi bi-person-circle me-1"></i>
+                            {{ user.username }}
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-primary nav-action">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+
+                {% else %}
+
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a class="btn btn-outline-primary nav-action"
+                           href="{% url 'login' %}">Login</a>
+                    </li>
+
+                    <li class="nav-item mt-2 mt-lg-0">
+                        <a class="btn btn-primary nav-action"
+                           href="{% url 'register' %}">Get Started</a>
+                    </li>
+
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+<section class="hero-section">
+    <div class="container py-5">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6 hero-copy">
+
+                <div class="hero-badge mb-4">
+                    <i class="bi bi-patch-check-fill me-2"></i>
+                    YOUR HEALTH, OUR PRIORITY
+                </div>
+
+                <h1 class="hero-title">
+                    Your health deserves
+                    <span>the right care.</span>
+                </h1>
+
+                <p class="hero-description mt-3">
+                    Discover doctors, explore medical specialties and book
+                    appointments with ease — all in one place.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a href="{% url 'doctors_list' %}"
+                       class="btn btn-primary btn-lg hero-primary-btn">
+                        Find a Doctor <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+
+                    <a href="{% url 'ai_care_guide' %}"
+                       class="btn btn-outline-primary btn-lg hero-secondary-btn">
+                        <i class="bi bi-stars me-2"></i>AI Care Guide
+                    </a>
+                </div>
+
+                <div class="hero-benefits mt-4">
+                    <span><i class="bi bi-check-circle-fill"></i> Easy booking</span>
+                    <span><i class="bi bi-check-circle-fill"></i> Specialist discovery</span>
+                    <span><i class="bi bi-check-circle-fill"></i> Manage appointments</span>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="hero-art">
+
+                    <div class="hero-decoration decoration-one"></div>
+                    <div class="hero-decoration decoration-two"></div>
+
+                    <div class="hero-medical-icon icon-one">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+
+                    <div class="hero-medical-icon icon-two">
+                        <i class="bi bi-shield-plus"></i>
+                    </div>
+
+                   
+                    <div class="doctor-visual">
+                     <img
+                        src="{% static 'booking/images/hero-doctor.jpg' %}"
+                        alt="Professional doctor at CareConnect"
+                        class="hero-doctor-photo"
+                        >
+                    </div>
+
+
+                    <div class="hero-info-card">
+                        <div class="info-icon">
+                            <i class="bi bi-calendar2-check-fill"></i>
+                        </div>
+                        <div>
+                            <strong>Simple appointment booking</strong>
+                            <p class="mb-0">Care at your convenience</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-floating-label">
+                        <i class="bi bi-heart-fill me-2"></i>
+                        Better care starts here
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="search-panel mt-5">
+            <div class="search-panel-heading mb-3">
+                <div class="search-heading-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div>
+                    <h2>Find your doctor</h2>
+                    <p class="mb-0">Search by name, specialty or location.</p>
+                </div>
+            </div>
+
+            <form action="{% url 'doctors_list' %}" method="get">
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-lg-4 col-md-6">
+                        <label for="doctor-search" class="form-label">
+                            Doctor or specialty
+                        </label>
+                        <div class="search-input-wrap">
+                            <i class="bi bi-person-search"></i>
+                            <input type="text"
+                                   id="doctor-search"
+                                   name="q"
+                                   value="{{ request.GET.q|default:'' }}"
+                                   class="form-control"
+                                   placeholder="Enter a doctor or specialty">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label for="specialty-search" class="form-label">
+                            Specialty
+                        </label>
+                        <select id="specialty-search"
+                                name="specialty"
+                                class="form-select">
+                            <option value="">All specialties</option>
+                            <option value="General Medicine">General Medicine</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Dermatology">Dermatology</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Dentistry">Dentistry</option>
+                            <option value="Ophthalmology">Ophthalmology</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label for="location-search" class="form-label">
+                            Location
+                        </label>
+                        <select id="location-search"
+                                name="location"
+                                class="form-select">
+                            <option value="">All locations</option>
+                            <option value="Kozhikode">Kozhikode</option>
+                            <option value="Calicut">Calicut</option>
+                            <option value="Malappuram">Malappuram</option>
+                            <option value="Kerala">Other Kerala locations</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-6">
+                        <button type="submit"
+                                class="btn btn-primary w-100 search-submit">
+                            Search <i class="bi bi-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+
+
+<section class="specialties-section py-5" id="specialties">
+    <div class="container py-lg-3">
+
+        <!-- Section Heading -->
+        <div class="section-heading d-flex flex-wrap justify-content-between
+                    align-items-end gap-3 mb-5">
+            <div>
+                <span class="section-eyebrow">CARE FOR EVERY NEED</span>
+
+                <h2 class="section-title">
+                    Explore medical specialties
+                </h2>
+
+                <p class="section-description mb-0">
+                    Find the right specialist for your healthcare needs.
+                </p>
+            </div>
+
+            <a href="{% url 'doctors_list' %}" class="section-link">
+                Explore all doctors
+                <i class="bi bi-arrow-up-right"></i>
+            </a>
+        </div>
+
+        
+        <div class="row g-4">
+
+            <!-- General Medicine -->
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=General%20Medicine">
+
+                    <div class="specialty-icon specialty-blue">
+                        <img
+                            src="{% static 'booking/images/specialties/general-medicine.png' %}"
+                            alt="General Medicine illustration"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>General Medicine</h3>
+                    <p>Everyday health concerns</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Cardiology">
+
+                    <div class="specialty-icon specialty-pink">
+                        <img
+                            src="{% static 'booking/images/specialties/cardiology.png' %}"
+                            alt="Cardiology heart"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Cardiology</h3>
+                    <p>Heart and circulation</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Dermatology">
+
+                    <div class="specialty-icon specialty-yellow">
+                        <img
+                            src="{% static 'booking/images/specialties/dermatology.png' %}"
+                            alt="Dermatology skin care"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Dermatology</h3>
+                    <p>Skin and hair health</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Pediatrics">
+
+                    <div class="specialty-icon specialty-green">
+                        <img
+                            src="{% static 'booking/images/specialties/pediatrics.png' %}"
+                            alt="Pediatrics child care"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Pediatrics</h3>
+                    <p>Healthcare for children</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Orthopedics">
+
+                    <div class="specialty-icon specialty-purple">
+                        <img
+                            src="{% static 'booking/images/specialties/orthopedics.png' %}"
+                            alt="Orthopedics bone and joint"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Orthopedics</h3>
+                    <p>Bones, muscles and joints</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Neurology">
+
+                    <div class="specialty-icon specialty-blue">
+                        <img
+                            src="{% static 'booking/images/specialties/neurology.png' %}"
+                            alt="Neurology brain"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Neurology</h3>
+                    <p>Brain and nervous system</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Dentistry">
+
+                    <div class="specialty-icon specialty-green">
+                        <img
+                            src="{% static 'booking/images/specialties/dentistry.png' %}"
+                            alt="Dentistry tooth"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Dentistry</h3>
+                    <p>Teeth and oral health</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+            
+            <div class="col-6 col-md-4 col-lg-3">
+                <a class="specialty-card"
+                   href="{% url 'doctors_list' %}?specialty=Ophthalmology">
+
+                    <div class="specialty-icon specialty-pink">
+                        <img
+                            src="{% static 'booking/images/specialties/ophthalmology.png' %}"
+                            alt="Ophthalmology eye care"
+                            class="specialty-illustration">
+                            
+                    </div>
+
+                    <h3>Ophthalmology</h3>
+                    <p>Eye and vision care</p>
+
+                    <span class="card-arrow">
+                        <i class="bi bi-arrow-up-right"></i>
+                    </span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="ai-section py-5" id="ai-guide">
+    <div class="container">
+        <div class="ai-card">
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-8">
+                    <div class="ai-label">
+                        <i class="bi bi-stars me-2"></i>YOUR SMART HEALTH COMPANION
+                    </div>
+
+                    <h2>Not sure which specialist to consult?</h2>
+
+                    <p>
+                        Tell our AI Care Guide about your health concerns
+                        to explore which medical specialist may be appropriate.
+                    </p>
+
+                    <a href="{% url 'ai_care_guide' %}" class="btn ai-btn">
+                        Try AI Care Guide <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+
+                    <p class="ai-disclaimer mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Provides general guidance, not a medical diagnosis.
+                        Seek professional care for medical concerns.
+                    </p>
+                </div>
+
+                <div class="col-lg-4 text-center">
+                    <div class="ai-art">
+                        <div class="ai-art-circle"></div>
+                        <i class="bi bi-robot ai-robot"></i>
+                        <div class="ai-art-spark spark-one">✦</div>
+                        <div class="ai-art-spark spark-two">✧</div>
+                        <div class="ai-art-tag">
+                            <i class="bi bi-chat-heart-fill me-2"></i>Let's find your next step
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section class="how-section py-5">
+    <div class="container py-lg-3">
+
+        <div class="text-center mb-5">
+            <span class="section-eyebrow">SIMPLE AND CONVENIENT</span>
+            <h2 class="section-title">Your care, in three easy steps</h2>
+            <p class="section-description">
+                Getting started with CareConnect is simple.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-icon"><i class="bi bi-search-heart"></i></div>
+                    <span class="step-number">STEP 01</span>
+                    <h3>Find a doctor</h3>
+                    <p>Explore doctors and specialties to find care that suits your needs.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-icon"><i class="bi bi-calendar2-check"></i></div>
+                    <span class="step-number">STEP 02</span>
+                    <h3>Book an appointment</h3>
+                    <p>Choose an available date and time and submit your booking.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-icon"><i class="bi bi-heart-pulse"></i></div>
+                    <span class="step-number">STEP 03</span>
+                    <h3>Manage your care</h3>
+                    <p>View your appointments and keep track of your bookings from your dashboard.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+
+<footer class="site-footer">
+    <div class="container py-5">
+
+        <div class="row g-4">
+
+            <div class="col-lg-5">
+                <a class="navbar-brand brand-logo footer-brand"
+                   href="{% url 'home' %}">
+                    <span class="brand-symbol"><i class="bi bi-heart-pulse-fill"></i></span>
+                    Care<span>Connect</span>
+                </a>
+
+                <p class="footer-description mt-3">
+                    Making healthcare easier to discover, access and manage.
+                </p>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <h3 class="footer-heading">Explore</h3>
+                <a class="footer-link" href="{% url 'doctors_list' %}">Find Doctors</a>
+                <a class="footer-link" href="{% url 'home' %}#specialties">Specialties</a>
+                <a class="footer-link" href="{% url 'ai_care_guide' %}">AI Care Guide</a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <h3 class="footer-heading">Your account</h3>
+
+                {% if user.is_authenticated %}
+                    <a class="footer-link" href="{% url 'patient_dashboard' %}">Dashboard</a>
+                    <a class="footer-link" href="{% url 'my_appointments' %}">My Appointments</a>
+                    <a class="footer-link" href="{% url 'patient_profile' %}">Patient Profile</a>
+                {% else %}
+                    <a class="footer-link" href="{% url 'login' %}">Login</a>
+                    <a class="footer-link" href="{% url 'register' %}">Create an account</a>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <hr class="footer-divider">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+            <small>© 2026 CareConnect. All rights reserved.</small>
+            <small>Healthcare discovery and appointment booking in Kerala.</small>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+

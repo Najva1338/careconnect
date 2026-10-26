@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Find Doctors | CareConnect</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #087f8c;
+            --primary-dark: #066570;
+            --soft-bg: #f4f8fb;
+            --text-dark: #183247;
+        }
+
+        body {
+            background: var(--soft-bg);
+            color: var(--text-dark);
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: white;
+        }
+
+        .brand-icon {
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            padding: 8px 11px;
+        }
+
+        .text-primary-custom {
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #e1f7f5, #edf3ff);
+            border-radius: 24px;
+            padding: 42px;
+        }
+
+        .search-panel {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 8px 30px rgba(28, 57, 78, .06);
+        }
+
+        .doctor-card {
+            background: white;
+            border: 1px solid #e7edf2;
+            border-radius: 20px;
+            height: 100%;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 30px rgba(28, 57, 78, .10);
+        }
+
+        .doctor-photo {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 22px;
+            background: #e7f5f4;
+        }
+
+        .doctor-placeholder {
+            width: 100px;
+            height: 100px;
+            border-radius: 22px;
+            background: #e7f5f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 42px;
+        }
+
+        .specialty-badge {
+            background: #e4f6f4;
+            color: #08736e;
+            border-radius: 30px;
+            padding: 7px 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-care {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-care:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
+        }
+
+        .info-line {
+            color: #637587;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 20px;
+        }
+
+        footer {
+            background: white;
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                padding: 25px 20px;
+            }
+
+            .doctor-photo,
+            .doctor-placeholder {
+                width: 82px;
+                height: 82px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
+    <div class="container py-2">
+
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
+           href="{% url 'home' %}">
+            <span class="brand-icon">
+                <i class="bi bi-heart-pulse-fill"></i>
+            </span>
+            <span>Care<span class="text-primary-custom">Connect</span></span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-semibold"
+                       href="{% url 'doctors_list' %}">Find Doctors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-care rounded-pill px-4"
+                       href="{% url 'doctors_list' %}">
+                        Book a Consultation
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<main class="container py-4 py-lg-5">
+
+    <!-- HERO -->
+    <section class="hero mb-4 mb-lg-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="badge rounded-pill text-bg-light mb-3 px-3 py-2">
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    Your health, our priority
+                </span>
+
+                <h1 class="fw-bold display-6 mb-3">
+                    Find the right doctor<br>
+                    <span class="text-primary-custom">for your health</span>
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    Explore doctors and hospitals in Kozhikode.
+                    Find a specialist and request your appointment easily.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <i class="bi bi-hospital text-primary-custom"
+                   style="font-size: 100px;"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEARCH AND FILTER -->
+    <section class="search-panel mb-4">
+        <form method="get" action="{% url 'doctors_list' %}">
+            <div class="row g-3 align-items-end">
+
+                <div class="col-lg-6">
+                    <label for="doctorSearch" class="form-label fw-semibold">
+                        Search doctors or hospitals
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="search"
+                               class="form-control"
+                               id="doctorSearch"
+                               name="q"
+                               value="{{ search_query }}"
+                               placeholder="Doctor, specialty, hospital...">
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <label for="specialization" class="form-label fw-semibold">
+                        Specialization
+                    </label>
+
+                    <select class="form-select" id="specialization"
+                            name="specialization">
+                        <option value="">All specializations</option>
+                    
+{% for specialization in specializations %}
+    <option value="{{ specialization.id }}"
+        {% if selected_specialization == specialization.id|stringformat:"s" %}
+            selected
+        {% endif %}>
+        {{ specialization.name }}
+    </option>
+{% endfor %}
+</select>
+
+                </div>
+
+                <div class="col-lg-2 d-grid">
+                    <button type="submit" class="btn btn-care py-2">
+                        Search
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </section>
+
+    <!-- DOCTOR COUNT -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h4 fw-bold mb-1">Available Doctors</h2>
+            <p class="text-secondary mb-0">
+                Choose a doctor who suits your needs.
+            </p>
+        </div>
+
+        <span class="badge rounded-pill text-bg-light border px-3 py-2">
+            {{ doctors|length }} found
+        </span>
+    </div>
+
+    <!-- DOCTOR CARDS -->
+    <div class="row g-4">
+
+        {% for doctor in doctors %}
+            <div class="col-12 col-md-6 col-xl-4">
+
+                <div class="doctor-card p-4">
+
+                    <div class="d-flex gap-3 align-items-center mb-3">
+
+                        {% if doctor.profile_photo %}
+                            <img src="{{ doctor.profile_photo.url }}"
+                                 class="doctor-photo"
+                                 alt="Photo of {{ doctor.name }}">
+                        {% else %}
+                            <div class="doctor-placeholder">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                        {% endif %}
+
+                        <div class="min-w-0">
+                            <h3 class="h5 fw-bold mb-1">
+                                {{ doctor.name }}
+                            </h3>
+
+                            <span class="specialty-badge">
+                                {{ doctor.specialization.name }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <hr class="text-secondary opacity-25">
+
+                    <div class="info-line">
+                        <i class="bi bi-hospital me-2 text-primary-custom"></i>
+                        {{ doctor.hospital.name }}
+                    </div>
+
+                    <div class="info-line">
+                        <i class="bi bi-geo-alt me-2 text-primary-custom"></i>
+                        {{ doctor.hospital.city }}
+                    </div>
+
+                    {% if doctor.qualification %}
+                        <div class="info-line">
+                            <i class="bi bi-mortarboard me-2 text-primary-custom"></i>
+                            {{ doctor.qualification }}
+                        </div>
+                    {% endif %}
+
+                    {% if doctor.experience %}
+                        <div class="info-line">
+                            <i class="bi bi-award me-2 text-primary-custom"></i>
+                            {{ doctor.experience }} years of experience
+                        </div>
+                    {% endif %}
+
+                    {% if doctor.consultation_fee %}
+                        <div class="info-line">
+                            <i class="bi bi-currency-rupee me-2 text-primary-custom"></i>
+                            Consultation fee: ₹{{ doctor.consultation_fee }}
+                        </div>
+                    {% endif %}
+
+                    {% if doctor.bio %}
+                        <p class="text-secondary small mt-3">
+                            {{ doctor.bio|truncatewords:18 }}
+                        </p>
+                    {% endif %}
+
+                    <div class="d-grid mt-4">
+                        <a href="{% url 'doctor_detail' doctor.id %}"
+                           class="btn btn-care rounded-3 py-2">
+                            View Profile
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state text-center">
+                    <i class="bi bi-person-exclamation display-3 text-secondary"></i>
+
+                    <h3 class="h4 fw-bold mt-3">No doctors found</h3>
+
+                    <p class="text-secondary">
+                        Try another search or choose a different specialization.
+                    </p>
+
+                    <a href="{% url 'doctors_list' %}"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Show all doctors
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="border-top mt-5 py-4">
+    <div class="container text-center">
+        <p class="fw-bold mb-1">
+            Care<span class="text-primary-custom">Connect</span>
+        </p>
+        <p class="small text-secondary mb-0">
+            Connecting patients with healthcare professionals.
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
