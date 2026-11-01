@@ -4,6 +4,8 @@ from django.utils import timezone
 from .models import Appointment
 from django.contrib.auth import get_user_model
 from .models import PatientProfile
+from .models import Doctor
+from .models import Hospital
 
 User = get_user_model()
 
@@ -95,6 +97,102 @@ class PatientProfileForm(forms.ModelForm):
             "profile_photo": forms.ClearableFileInput(attrs={
                 "class": "form-control",
                 "accept": "image/*",
+            }),
+        }
+        
+
+
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = [
+            'name',
+            'specialization',
+            'hospital',
+            'qualification',
+            'experience',
+            'consultation_fee',
+            'phone',
+            'email',
+            'bio',
+            'profile_photo',
+            'is_available',
+        ]
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter doctor name'
+            }),
+            'specialization': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'hospital': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'qualification': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g. MBBS, MD'
+            }),
+            'experience': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Years of experience'
+            }),
+            'consultation_fee': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Consultation fee'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control'
+            }),
+            'bio': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            }),
+            'profile_photo': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
+            'is_available': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+        
+
+class HospitalForm(forms.ModelForm):
+    class Meta:
+        model = Hospital
+        fields = [
+            'name',
+            'address',
+            'city',
+            'phone',
+            'email',
+            'image',
+        ]
+
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Hospital name'
+            }),
+            'address': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3
+            }),
+            'city': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control'
+            }),
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
             }),
         }
 

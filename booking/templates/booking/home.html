@@ -60,11 +60,12 @@
 
                 {% if user.is_authenticated %}
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'patient_dashboard' %}">
-                            Dashboard
-                        </a>
-                    </li>
+                    
+<li class="nav-item">
+    <a class="nav-link" href="{{ dashboard_url }}">
+        Dashboard
+    </a>
+</li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'my_appointments' %}">
@@ -596,18 +597,42 @@
                 <a class="footer-link" href="{% url 'ai_care_guide' %}">AI Care Guide</a>
             </div>
 
-            <div class="col-6 col-lg-4">
-                <h3 class="footer-heading">Your account</h3>
+            
+<div class="col-6 col-lg-4">
+    <h3 class="footer-heading">Your account</h3>
 
-                {% if user.is_authenticated %}
-                    <a class="footer-link" href="{% url 'patient_dashboard' %}">Dashboard</a>
-                    <a class="footer-link" href="{% url 'my_appointments' %}">My Appointments</a>
-                    <a class="footer-link" href="{% url 'patient_profile' %}">Patient Profile</a>
-                {% else %}
-                    <a class="footer-link" href="{% url 'login' %}">Login</a>
-                    <a class="footer-link" href="{% url 'register' %}">Create an account</a>
-                {% endif %}
-            </div>
+    {% if user.is_authenticated %}
+
+        {% if user.is_superuser %}
+            <a class="footer-link" href="/admin/">Dashboard</a>
+
+        {% elif "Doctor" in user.groups.all|join:", " %}
+            <a class="footer-link" href="{% url 'doctor_dashboard' %}">
+                Doctor Dashboard
+            </a>
+
+        {% elif "staff" in user.groups.all|join:", " or "Staff" in user.groups.all|join:", " %}
+            <a class="footer-link" href="{% url 'staff_dashboard' %}">
+                Staff Dashboard
+            </a>
+
+        {% else %}
+            <a class="footer-link" href="{% url 'patient_dashboard' %}">
+                Patient Dashboard
+            </a>
+        {% endif %}
+
+        {% if not user.groups.all %}
+            <a class="footer-link" href="{% url 'my_appointments' %}">My Appointments</a>
+            <a class="footer-link" href="{% url 'patient_profile' %}">Patient Profile</a>
+        {% endif %}
+
+    {% else %}
+        <a class="footer-link" href="{% url 'login' %}">Login</a>
+        <a class="footer-link" href="{% url 'register' %}">Create an account</a>
+    {% endif %}
+</div>
+
 
         </div>
 

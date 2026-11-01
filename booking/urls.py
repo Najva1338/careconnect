@@ -71,4 +71,71 @@ path(
     views.mark_all_notifications_read,
     name="mark_all_notifications_read",
 ),
+path(
+    "doctor-dashboard/",
+    views.doctor_dashboard,
+    name="doctor_dashboard",
+),
+path(
+    "doctor-update-appointment/<int:appointment_id>/",
+    views.doctor_update_appointment_status,
+    name="doctor_update_appointment_status",
+),
+
+path(
+    "staff-dashboard/",
+    views.staff_dashboard,
+    name="staff_dashboard",
+),
+path("staff-doctors/", views.staff_doctors, name="staff_doctors"),
+path(
+    "staff-doctors/add/",
+    views.staff_add_doctor,
+    name="staff_add_doctor"
+),
+path(
+    "staff-doctors/edit/<int:doctor_id>/",
+    views.staff_edit_doctor,
+    name="staff_edit_doctor"
+),
+path(
+    "staff-doctors/delete/<int:doctor_id>/",
+    views.staff_delete_doctor,
+    name="staff_delete_doctor"
+),
+path("staff-hospitals/", views.staff_hospitals, name="staff_hospitals"),
+path(
+    "staff-hospitals/",
+    views.staff_hospitals,
+    name="staff_hospitals"
+),
+
+path(
+    "staff-hospitals/add/",
+    views.staff_add_hospital,
+    name="staff_add_hospital"
+),
+
+path(
+    "staff-hospitals/edit/<int:hospital_id>/",
+    views.staff_edit_hospital,
+    name="staff_edit_hospital"
+),
+
+path(
+    "staff-hospitals/delete/<int:hospital_id>/",
+    views.staff_delete_hospital,
+    name="staff_delete_hospital"
+),
+path(
+    "staff-appointments/",
+    views.staff_manage_appointments,
+    name="staff_manage_appointments",
+),
+
+path(
+    "staff-appointments/<int:appointment_id>/update-status/",
+    views.staff_update_appointment_status,
+    name="staff_update_appointment_status",
+),
 ]

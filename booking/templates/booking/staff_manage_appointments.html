@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments | CareConnect</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background: #f4f8f8;
+            font-family: Arial, sans-serif;
+            color: #243746;
+        }
+
+        .navbar {
+            background: #087f8c;
+        }
+
+        .page-title {
+            color: #087f8c;
+            font-weight: 700;
+        }
+
+        .main-card {
+            background: #ffffff;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .table thead th {
+            background: #eaf5f5;
+            color: #28545a;
+            white-space: nowrap;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 9px;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+        .status-form {
+            min-width: 190px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-completed {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        @media (max-width: 768px) {
+            .page-heading {
+                align-items: flex-start !important;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .filter-form {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container-fluid px-3 px-md-4">
+        <a class="navbar-brand fw-bold" href="{% url 'staff_dashboard' %}">
+            CareConnect
+        </a>
+
+        <a href="{% url 'staff_dashboard' %}"
+           class="btn btn-light btn-sm">
+            ← Staff Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container-fluid px-3 px-md-4 py-4">
+
+    <div class="page-heading d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title mb-1">Appointment Management</h2>
+            <p class="text-secondary mb-0">
+                View appointments and update their status.
+            </p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                 role="alert">
+                {{ message }}
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="main-card p-3 p-md-4 mb-4">
+
+        <form method="get" class="filter-form row g-3 align-items-end">
+
+            <div class="col-12 col-md-6">
+                <label for="search" class="form-label fw-semibold">
+                    Search appointments
+                </label>
+
+                <input
+                    type="text"
+                    name="q"
+                    id="search"
+                    class="form-control"
+                    placeholder="Patient, doctor, or hospital..."
+                    value="{{ search_query }}"
+                >
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="status" class="form-label fw-semibold">
+                    Appointment status
+                </label>
+
+                <select name="status" id="status" class="form-select">
+                    <option value="">All statuses</option>
+
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}"
+                            {% if selected_status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-6 col-md-2 d-grid">
+                <button type="submit" class="btn btn-success">
+                    Search
+                </button>
+            </div>
+
+            <div class="col-6 col-md-1 d-grid">
+                <a href="{% url 'staff_manage_appointments' %}"
+                   class="btn btn-outline-secondary">
+                    Reset
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="main-card p-3 p-md-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Appointments</h5>
+
+            <span class="badge text-bg-secondary">
+                {{ appointments|length }} result{{ appointments|length|pluralize }}
+            </span>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Hospital</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Reason</th>
+                        <th>Current Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">
+                                    {% if appointment.patient.get_full_name %}
+                                        {{ appointment.patient.get_full_name }}
+                                    {% else %}
+                                        {{ appointment.patient.username }}
+                                    {% endif %}
+                                </div>
+
+                                <small class="text-secondary">
+                                    @{{ appointment.patient.username }}
+                                </small>
+                            </td>
+
+                            <td>
+                                Dr. {{ appointment.doctor.name }}
+
+                                <br>
+
+                                <small class="text-secondary">
+                                    {{ appointment.doctor.specialization.name }}
+                                </small>
+                            </td>
+
+                            <td>
+                                {{ appointment.doctor.hospital.name }}
+                            </td>
+
+                            <td>
+                                {{ appointment.appointment_date|date:"d M Y" }}
+                            </td>
+
+                            <td>
+                                {{ appointment.appointment_time|time:"h:i A" }}
+                            </td>
+
+                            <td>
+                                {% if appointment.reason %}
+                                    {{ appointment.reason|truncatechars:50 }}
+                                {% else %}
+                                    <span class="text-secondary">Not provided</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if appointment.status == "Pending" %}
+                                    <span class="badge status-pending">Pending</span>
+                                {% elif appointment.status == "Confirmed" %}
+                                    <span class="badge status-confirmed">Confirmed</span>
+                                {% elif appointment.status == "Completed" %}
+                                    <span class="badge status-completed">Completed</span>
+                                {% elif appointment.status == "Cancelled" %}
+                                    <span class="badge status-cancelled">Cancelled</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">
+                                        {{ appointment.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form
+                                    method="post"
+                                    action="{% url 'staff_update_appointment_status' appointment.id %}"
+                                    class="status-form"
+                                    onsubmit="return confirm('Update this appointment status and notify the patient?');"
+                                >
+                                    {% csrf_token %}
+
+                                    <select
+                                        name="status"
+                                        class="form-select form-select-sm mb-2"
+                                        aria-label="New appointment status"
+                                        required
+                                    >
+                                        {% for value, label in status_choices %}
+                                            <option value="{{ value }}"
+                                                {% if appointment.status == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-success w-100">
+                                        Update Status
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <h6 class="fw-bold">No appointments found</h6>
+
+                                <p class="text-secondary mb-0">
+                                    Try changing your search or status filter.
+                                </p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

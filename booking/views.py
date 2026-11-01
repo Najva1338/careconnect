@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
-from .models import Doctor, Appointment,Specialization
+from .models import Doctor, Appointment,Specialization,Hospital
 from .forms import AppointmentForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -16,16 +16,36 @@ from django.views.decorators.http import require_POST
 from .models import PatientProfile
 from .forms import PatientDetailsForm, PatientProfileForm
 from .models import Notification
-
+from django.contrib.auth.models import Group
+from .decorators import role_required
+from .forms import DoctorForm,HospitalForm
 
 
 def onboarding(request):
     return render(request, 'booking/onboarding.html')
 
 
-def home(request):
-    return render(request, 'booking/home.html')
+from django.urls import reverse
 
+
+def home(request):
+    dashboard_url = reverse("patient_dashboard")
+
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            dashboard_url = "/admin/"
+
+        elif request.user.groups.filter(name="Doctor").exists():
+            dashboard_url = reverse("doctor_dashboard")
+
+        elif request.user.groups.filter(name__iexact="Staff").exists():
+            dashboard_url = reverse("staff_dashboard")
+
+    return render(
+        request,
+        "booking/home.html",
+        {"dashboard_url": dashboard_url}
+    )
 
 
 
@@ -292,11 +312,23 @@ def appointment_confirmation(request, appointment_id):
         },
     )
 def register(request):
+
+    if request.user.is_authenticated:
+        return redirect("home")
+
     if request.method == "POST":
         form = UserCreationForm(request.POST)
 
         if form.is_valid():
             user = form.save()
+
+            # Automatically assign Patient role
+            patient_group, created = Group.objects.get_or_create(
+                name="Patient"
+            )
+
+            user.groups.add(patient_group)
+
             login(request, user)
 
             messages.success(
@@ -305,6 +337,7 @@ def register(request):
             )
 
             return redirect("home")
+
     else:
         form = UserCreationForm()
 
@@ -313,6 +346,7 @@ def register(request):
         "booking/register.html",
         {"form": form}
     )
+
 
 
 def login_view(request):
@@ -334,7 +368,18 @@ def login_view(request):
                 "Welcome back to CareConnect!"
             )
 
-            return redirect("home")
+            # Redirect according to user role
+            if user.is_superuser:
+                return redirect("/admin/")
+
+            if user.groups.filter(name="Doctor").exists():
+                return redirect("doctor_dashboard")
+
+            if user.groups.filter(name__iexact="Staff").exists():
+                return redirect("staff_dashboard")
+
+            return redirect("patient_dashboard")
+
     else:
         form = AuthenticationForm(request)
 
@@ -740,4 +785,413 @@ def mark_all_notifications_read(request):
         ).update(is_read=True)
 
     return redirect("notification_list")
+@role_required("Doctor")
+def doctor_dashboard(request):
+    doctor = get_object_or_404(Doctor, user=request.user)
 
+    appointments = Appointment.objects.filter(
+        doctor=doctor
+    ).select_related(
+        "patient"
+    ).order_by(
+        "-appointment_date",
+        "appointment_time"
+    )
+
+    today = timezone.localdate()
+    today_appointments = appointments.filter(
+    appointment_date=today
+).count()
+
+    upcoming_appointments = appointments.filter(
+        appointment_date__gte=today,
+        status__in=["Pending", "Confirmed"]
+    )
+
+    context = {
+        "doctor": doctor,
+        "appointments": appointments,
+        "upcoming_appointments": upcoming_appointments,
+        "total_appointments": appointments.count(),
+        "pending_appointments": appointments.filter(
+            status="Pending"
+        ).count(),
+        "confirmed_appointments": appointments.filter(
+            status="Confirmed"
+        ).count(),
+        "today_appointments": today_appointments,
+    }
+
+    return render(
+        request,
+        "booking/doctor_dashboard.html",
+        context
+    )
+
+@role_required("Doctor")
+@require_POST
+def doctor_update_appointment_status(request, appointment_id):
+
+    appointment = get_object_or_404(
+        Appointment,
+        id=appointment_id,
+        doctor__user=request.user
+    )
+
+    new_status = request.POST.get("status")
+
+    if appointment.status != "Pending":
+        messages.warning(
+            request,
+            "Only pending appointments can be updated."
+        )
+
+    elif new_status == "Confirmed":
+        appointment.status = "Confirmed"
+        appointment.save(update_fields=["status"])
+
+        Notification.objects.create(
+            user=appointment.patient,
+            title="Appointment Confirmed!",
+            message=(
+                f"Your appointment with Dr. {appointment.doctor.name} "
+                f"on {appointment.appointment_date} at "
+                f"{appointment.appointment_time} has been confirmed."
+            ),
+            notification_type="confirmed"
+        )
+
+        messages.success(
+            request,
+            "Appointment confirmed and patient notified!"
+        )
+
+    elif new_status == "Cancelled":
+        appointment.status = "Cancelled"
+        appointment.save(update_fields=["status"])
+
+        Notification.objects.create(
+            user=appointment.patient,
+            title="Appointment Cancelled",
+            message=(
+                f"Your appointment with Dr. {appointment.doctor.name} "
+                f"on {appointment.appointment_date} at "
+                f"{appointment.appointment_time} has been cancelled."
+            ),
+            notification_type="cancelled"
+        )
+
+        messages.success(
+            request,
+            "Appointment cancelled and patient notified!"
+        )
+
+    else:
+        messages.error(request, "Invalid appointment status.")
+
+    return redirect("doctor_dashboard")
+
+
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_dashboard(request):
+
+    appointments = Appointment.objects.select_related(
+        "patient",
+        "doctor",
+        "doctor__specialization",
+        "doctor__hospital"
+    ).order_by("-appointment_date", "appointment_time")
+
+    # Search by patient name or doctor name
+    search_query = request.GET.get("q", "").strip()
+
+    if search_query:
+        appointments = appointments.filter(
+            Q(patient__username__icontains=search_query) |
+            Q(patient__first_name__icontains=search_query) |
+            Q(patient__last_name__icontains=search_query) |
+            Q(doctor__name__icontains=search_query) |
+            Q(doctor__hospital__name__icontains=search_query)
+        )
+
+    # Filter by appointment status
+    selected_status = request.GET.get("status", "")
+
+    if selected_status in ["Pending", "Confirmed", "Cancelled", "Completed"]:
+        appointments = appointments.filter(status=selected_status)
+
+    # Statistics (based on all appointments, not filtered results)
+    all_appointments = Appointment.objects.all()
+
+    context = {
+        "appointments": appointments,
+        "search_query": search_query,
+        "selected_status": selected_status,
+
+        "total_appointments": all_appointments.count(),
+        "pending_appointments": all_appointments.filter(status="Pending").count(),
+        "confirmed_appointments": all_appointments.filter(status="Confirmed").count(),
+        "cancelled_appointments": all_appointments.filter(status="Cancelled").count(),
+        "completed_appointments": all_appointments.filter(status="Completed").count(),
+    }
+
+    return render(request, "booking/staff_dashboard.html", context)
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_doctors(request):
+    doctors = Doctor.objects.select_related(
+        "specialization",
+        "hospital"
+    ).order_by("name")
+
+    return render(
+        request,
+        "booking/staff_doctors.html",
+        {"doctors": doctors}
+    )
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_add_doctor(request):
+    if request.method == "POST":
+        form = DoctorForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Doctor added successfully!")
+            return redirect("staff_doctors")
+    else:
+        form = DoctorForm()
+
+    return render(
+        request,
+        "booking/staff_doctor_form.html",
+        {
+            "form": form,
+            "page_title": "Add New Doctor"
+        }
+    )
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_edit_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    if request.method == "POST":
+        form = DoctorForm(
+            request.POST,
+            request.FILES,
+            instance=doctor
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Doctor updated successfully!")
+            return redirect("staff_doctors")
+    else:
+        form = DoctorForm(instance=doctor)
+
+    return render(
+        request,
+        "booking/staff_doctor_form.html",
+        {
+            "form": form,
+            "page_title": "Edit Doctor"
+        }
+    )
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_delete_doctor(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    if request.method == "POST":
+        doctor_name = doctor.name
+        doctor.delete()
+
+        messages.success(
+            request,
+            f"Dr. {doctor_name} deleted successfully!"
+        )
+        return redirect("staff_doctors")
+
+    return render(
+        request,
+        "booking/staff_delete_doctor.html",
+        {"doctor": doctor}
+    )
+# VIEW HOSPITALS
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_hospitals(request):
+    hospitals = Hospital.objects.all().order_by("name")
+
+    return render(
+        request,
+        "booking/staff_hospitals.html",
+        {"hospitals": hospitals}
+    )
+
+
+# ADD HOSPITAL
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_add_hospital(request):
+    if request.method == "POST":
+        form = HospitalForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Hospital added successfully!")
+            return redirect("staff_hospitals")
+    else:
+        form = HospitalForm()
+
+    return render(request, "booking/staff_hospital_form.html", {
+        "form": form,
+        "page_title": "Add New Hospital"
+    })
+
+
+# EDIT HOSPITAL
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_edit_hospital(request, hospital_id):
+    hospital = get_object_or_404(Hospital, id=hospital_id)
+
+    if request.method == "POST":
+        form = HospitalForm(
+            request.POST,
+            request.FILES,
+            instance=hospital
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Hospital updated successfully!")
+            return redirect("staff_hospitals")
+    else:
+        form = HospitalForm(instance=hospital)
+
+    return render(request, "booking/staff_hospital_form.html", {
+        "form": form,
+        "page_title": "Edit Hospital"
+    })
+
+
+# DELETE HOSPITAL
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_delete_hospital(request, hospital_id):
+    hospital = get_object_or_404(Hospital, id=hospital_id)
+
+    if request.method == "POST":
+
+        # Do not delete a hospital that has linked doctors.
+        if hospital.doctors.exists():
+            messages.error(
+                request,
+                "This hospital cannot be deleted because doctors are linked to it."
+            )
+            return redirect("staff_hospitals")
+
+        hospital.delete()
+        messages.success(request, "Hospital deleted successfully!")
+        return redirect("staff_hospitals")
+
+    return render(request, "booking/staff_delete_hospital.html", {
+        "hospital": hospital
+    })
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_manage_appointments(request):
+    appointments = Appointment.objects.select_related(
+        "patient",
+        "doctor",
+        "doctor__specialization",
+        "doctor__hospital",
+    ).order_by("-appointment_date", "appointment_time")
+
+    search_query = request.GET.get("q", "").strip()
+    selected_status = request.GET.get("status", "").strip()
+
+    # Search by patient, doctor, or hospital
+    if search_query:
+        appointments = appointments.filter(
+            Q(patient__username__icontains=search_query)
+            | Q(patient__first_name__icontains=search_query)
+            | Q(patient__last_name__icontains=search_query)
+            | Q(doctor__name__icontains=search_query)
+            | Q(doctor__hospital__name__icontains=search_query)
+        )
+
+    # Filter by status
+    valid_statuses = [
+        "Pending",
+        "Confirmed",
+        "Completed",
+        "Cancelled",
+    ]
+
+    if selected_status in valid_statuses:
+        appointments = appointments.filter(status=selected_status)
+    else:
+        selected_status = ""
+
+    context = {
+        "appointments": appointments,
+        "search_query": search_query,
+        "selected_status": selected_status,
+        "status_choices": Appointment.STATUS_CHOICES,
+    }
+
+    return render(
+        request,
+        "booking/staff_manage_appointments.html",
+        context,
+    )
+
+
+@role_required("Staff", "staff", "Admin", "admin")
+def staff_update_appointment_status(request, appointment_id):
+    if request.method != "POST":
+        return redirect("staff_manage_appointments")
+
+    appointment = get_object_or_404(
+        Appointment.objects.select_related("patient", "doctor"),
+        id=appointment_id,
+    )
+
+    new_status = request.POST.get("status", "").strip()
+
+    valid_statuses = dict(Appointment.STATUS_CHOICES)
+
+    if new_status not in valid_statuses:
+        messages.error(request, "Please select a valid appointment status.")
+        return redirect("staff_manage_appointments")
+
+    old_status = appointment.status
+
+    if old_status == new_status:
+        messages.info(
+            request,
+            "The appointment already has this status.",
+        )
+        return redirect("staff_manage_appointments")
+
+    appointment.status = new_status
+    appointment.save(update_fields=["status"])
+
+    # Notify the patient when the status changes.
+    notification_type = {
+        "Confirmed": "confirmed",
+        "Cancelled": "cancelled",
+    }.get(new_status, "booking")
+
+    Notification.objects.create(
+        user=appointment.patient,
+        title=f"Appointment {new_status}",
+        message=(
+            f"Your appointment with Dr. {appointment.doctor.name} "
+            f"on {appointment.appointment_date} at "
+            f"{appointment.appointment_time.strftime('%I:%M %p')} "
+            f"has been updated from {old_status} to {new_status}."
+        ),
+        notification_type=notification_type,
+    )
+
+    messages.success(
+        request,
+        f"Appointment status updated to {new_status}. "
+        "The patient has been notified.",
+    )
+
+    return redirect("staff_manage_appointments")
